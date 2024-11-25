@@ -130,7 +130,7 @@ minikube start --nodes=3
 
 If the repository does not exist, you must create it manually on GitHub beforehand (using either the web UI, `gh` CLI, or Git commands).
 
-Repository cab either be public or private.
+Repository can either be public or private.
 
 ### Generate SSH keys and test connectivity to GitHub
 
