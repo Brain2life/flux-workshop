@@ -2,14 +2,35 @@
 
 ## Table of contents:
 1. [Tasks](#tasks)
+2. [Terms and concepts](#terms-and-concepts)
 2. [Overview](#overview)
 3. [How Flux works](#how-flux-works)
 4. [Flux components](#flux-components)
+    - [Source controller](#source-controller)
+    - [Kustomize controller](#kustomize-controller)
+    - [Helm controller](#helm-controller)
+    - [Notification controller](#notification-controller)
+    - [Image reflector and automation controller](#image-reflector-and-automation-controller)
+4. [Workshop](#workshop)
+    - [Install and start Minikube](#install-and-start-minikube)
+    - [Create GitHub repository or use existing one](#create-github-repository-or-use-existing-one)
+    - [Generate SSH keys and test connectivity to GitHub](#generate-ssh-keys-and-test-connectivity-to-github)
+    - [Configure Flux to use SSH](#configure-flux-to-use-ssh)
+    - [Bootstrap Flux](#bootstrap-flux)
+    - [Fork podinfo repository for app deployment](#fork-podinfo-repository-for-app-deployment)
+    - [Update Flux GitRepository configuration](#update-flux-gitrepository-configuration)
+    - [Configure Flux Kustomize for podinfo deployment](#configure-flux-kustomize-for-podinfo-deployment)
+    - [Make changes in podinfo fork](#make-changes-in-podinfo-fork)
+    - [Check the deployment results](#check-the-deployment-results)
 
 ## Tasks
 1. Install Minikube
 2. Install Flux CLI
-3. Install Flux
+3. Install bootstrap Flux operator
+4. Configure and install 
+5. Configure and install Flux kustomize
+6. Fork `podinfo` repository and change the number of replicas in deployment
+7. Check the reconciliation loop by Flux in action
 
 ## Terms and concepts
 - [An Introduction to Kustomize](https://blog.scottlowe.org/2019/09/13/an-introduction-to-kustomize/)
@@ -18,7 +39,7 @@
 
 [Flux](https://fluxcd.io/flux/) is a tool that watches your Git repository for changes and automatically applies those changes to your cluster when there is new code to deploy. It is a pioneering tool in implementing GitOps practice that was introduced by Weaveworks. 
 
-This workshop shows how to provision Flux operator in Minikube cluster and connect to an external GitHub repository via SSH keys Alternative popular option is to use personal access tokens (PAT) to bootstrap Flux and connect to GitHub. In this case, Flux will create repository and commit the required Kubernetes manifest files. For more information about bootstrapping Flux with PAT, see [Flux Get Started](https://fluxcd.io/flux/get-started/).
+This workshop shows how to provision Flux operator in Minikube cluster and connect to an external GitHub repository via SSH keys Alternative popular option is to use personal access tokens (PAT) to bootstrap Flux and connect to GitHub. In this case, Flux will create repository and commit the required Kubernetes manifest files. For more information about bootstrapping Flux with PAT, see [Flux Get Started](https://fluxcd.io/flux/get-started/). As a deployment app the [`podinfo`](https://github.com/stefanprodan/podinfo) is used.
 
 When properly managed SSH keys are often considered more secure option than PATs.
 
@@ -198,6 +219,56 @@ spec:
 Apply the manifest:
 ```bash
 kubectl apply -f git-repository.yaml
+```
+
+### Configure Flux Kustomize for podinfo deployment  
+
+Configure Flux to deploy the application and apply a Kustomize configuration to the application from `podinfo` fork's `./kustomize` folder. 
+
+Create `podinfo-kustomization.yaml` in `flux-system` folder:
+```yaml
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: podinfo
+  namespace: flux-system
+spec:
+  interval: 3m0s
+  path: ./kustomize
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: podinfo
+  targetNamespace: default
+```
+
+Apply the Kustomize configuration:
+```bash
+flux create kustomization podinfo \
+    --target-namespace=default \
+    --source=podinfo \
+    --path="./kustomize" \
+    --prune=true \
+    --interval=3m \
+    --export > ./flux-system/podinfo-kustomization.yaml
+```
+
+Apply the manifest:
+```bash
+kubectl apply -f podinfo-kustomization.yaml
+```
+
+To check if kustomization being applied:
+```bash
+flux get kustomizations --watch
+```
+
+Commit and push the changes to the repository:
+```bash
+git add .
+git commit -m "Add podinfo Kustomization"
+git push
 ```
 
 ### Make changes in podinfo fork
