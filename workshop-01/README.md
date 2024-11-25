@@ -177,3 +177,56 @@ Clone the forked repository to your local machine
 git clone git@github.com:your-username/podinfo.git
 cd podinfo
 ```
+
+### Update Flux GitRepository configuration
+
+In `flux-system` folder, create the `GitRepository` resource manifest to point to your fork:
+```bash
+# git-repository.yaml
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: podinfo
+  namespace: flux-system
+spec:
+  interval: 30s
+  ref:
+    branch: main
+  url: https://github.com/Brain2life/podinfo # Point to your fork of podinfo repository
+```
+
+Apply the manifest:
+```bash
+kubectl apply -f git-repository.yaml
+```
+
+### Make changes in podinfo fork
+
+Modify a Kubernetes manifest or any other resource in the repository. For example, change the replica count in the deployment in `podinfo/kustomize/deployment.yaml`:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo
+spec:
+  replicas: 3  # Change the replica count
+```
+
+Commit and push the changes in your local `podinfo` repository:
+```bash
+git add .
+git commit -m "Update replica count to 3"
+git push origin main
+```
+
+### Check the deployment results
+
+Within 30s (or the interval you've set), Flux will detect the changes in your forked repository and apply them to your cluster.
+
+Verify the changes are reflected in your cluster:
+```bash
+kubectl get deployment podinfo -n default
+kubectl describe deployment podinfo -n default
+```
+
+Confirm that the replica count (or any other change you made) has been updated.
