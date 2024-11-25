@@ -144,7 +144,12 @@ kubectl get secret -n flux-system
 
 ### Bootstrap Flux
 
-To bootstrap Flux into given repository and specific folder:
+Check that your cluster can install Flux:
+```bash
+flux check --pre
+```
+
+To bootstrap Flux into given repository and specific folder (ensure that folder already exists in remote repository):
 ```bash
 flux bootstrap git \
   --url=ssh://git@github.com/your-username/your-repo.git \
@@ -154,3 +159,21 @@ flux bootstrap git \
 
 **NOTE**  
 Kubernetes secrets store data in base64 encoded format which is not secure. As a best practice it is recommended to use Secrets Managers or encryptors like [`sops`](https://maxat-akbanov.com/securing-secrets-with-sops-an-introduction) or [*sealed secrets*](https://github.com/bitnami-labs/sealed-secrets) to encrypt secrets at Git repository and cluster runtime levels.
+
+When running the bootstrap command, the following happens:
+1. Flux will create its configuration files (like `kustomization.yaml` and other resources) inside the specified folder (`flux-config`).
+2. The folder will contain the manifests required to bootstrap Flux, such as the `GitRepository` and `Kustomization` resources.
+
+After bootstrapping, check that the folder is created in your repository and contains the expected configuration files. 
+
+### Fork podinfo repository for app deployment
+
+The [`podinfo`](https://github.com/stefanprodan/podinfo) is a open-source project that contains  a tiny web application made with Go that showcases best practices of running microservices in Kubernetes. Podinfo is used by CNCF projects like Flux and Flagger for end-to-end testing and workshops.
+
+To deploy `podinfo` app, fork the repository from [https://github.com/stefanprodan/podinfo](https://github.com/stefanprodan/podinfo).
+
+Clone the forked repository to your local machine
+```bash
+git clone git@github.com:your-username/podinfo.git
+cd podinfo
+```
