@@ -26,11 +26,11 @@
 ## Tasks
 1. Install Minikube
 2. Install Flux CLI
-3. Install bootstrap Flux operator
-4. Configure and install Flux GitRepository
-5. Configure and install Flux kustomize
+3. Configure and install Flux GitRepository
+4. Configure and install Flux kustomize
+5. Bootstrap Flux operator
 6. Fork `podinfo` repository and change the number of replicas in deployment
-7. Check the reconciliation loop by Flux in action
+7. Check the reconciliation loop in action by Flux
 
 ## Terms and concepts
 - [An Introduction to Kustomize](https://blog.scottlowe.org/2019/09/13/an-introduction-to-kustomize/)
