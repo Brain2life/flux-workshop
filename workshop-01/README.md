@@ -34,6 +34,7 @@
 
 ## Terms and concepts
 - [An Introduction to Kustomize](https://blog.scottlowe.org/2019/09/13/an-introduction-to-kustomize/)
+- [Codefresh blog: GitOps](https://codefresh.io/learn/gitops/)
 
 ## Overview
 
