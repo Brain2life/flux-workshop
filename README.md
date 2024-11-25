@@ -1,2 +1,6 @@
 # flux-workshop
-Collection of practice workshops for mastering Flux GitOps
+
+![](./img/flux.png)
+
+# Workshops
+- [Install and configure Flux with Minikube and GitHub](./workshop-01/)
