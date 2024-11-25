@@ -27,7 +27,7 @@
 1. Install Minikube
 2. Install Flux CLI
 3. Install bootstrap Flux operator
-4. Configure and install 
+4. Configure and install Flux GitRepository
 5. Configure and install Flux kustomize
 6. Fork `podinfo` repository and change the number of replicas in deployment
 7. Check the reconciliation loop by Flux in action
