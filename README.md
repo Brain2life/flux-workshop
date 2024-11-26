@@ -1,5 +1,3 @@
-# flux-workshop
-
 ![](./img/flux.png)
 
 # Workshops
